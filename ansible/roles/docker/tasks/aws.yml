@@ -1,0 +1,36 @@
+---
+- name: Install docker from AWS yum
+  yum: name=docker state=latest
+  become: true
+  tags: [docker]
+
+- name: Docker set to run on startup
+  command: chkconfig docker on
+  become: true
+  tags: [docker]
+
+- name: Start docker service
+  service:
+    name: docker
+    state: started
+  become: true
+
+- name: Let ec2-user run docker commands
+  command: usermod -a -G docker ec2-user
+  become: true
+  tags: [docker]
+
+- name: python-pip is present
+  yum:
+     name: python-pip
+     state: present
+  become: yes
+  tags: [docker]
+
+- name: Docker-PY
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - six==1.4
+    - docker-py==1.1.0
+  become: yes

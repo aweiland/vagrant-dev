@@ -1,0 +1,9 @@
+- name: Registrator Container is running
+  docker:
+    name: "registrator"
+    image: gliderlabs/registrator
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    hostname: "{{ ansible_hostname }}"
+    command: -ip 10.100.199.200 consul://10.100.199.200:8500
+  tags: [registrator]

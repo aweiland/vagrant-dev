@@ -1,0 +1,3 @@
+centos_files: [
+  { src: "docker.repo", dest: "/etc/yum.repos.d/docker.repo" },
+]

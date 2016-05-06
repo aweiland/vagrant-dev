@@ -1,0 +1,55 @@
+---
+- name: Add Docker repo
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root 
+    group: root 
+    mode: 0644
+  with_items: centos_files
+  
+  tags: [docker]
+
+- name: Install Docker
+  yum:
+    name: docker-engine
+    # enablerepo: docker
+    state: latest
+  tags: [docker]
+
+
+- name: CentOS Docker service is running
+  service:
+    name: docker
+    state: running
+  tags: [docker]
+
+- name: python-pip is present
+  yum:
+     name: python-pip
+     state: present
+  become: yes
+  tags: [docker]
+
+- name: Docker Py is present
+  yum:
+    name: python-docker-py
+    state: present
+  tags: [docker]
+
+- name: Let vagrant run docker commands
+  command: usermod -a -G docker vagrant
+  become: true
+  tags: [docker]
+
+
+- name: DockerUI is running
+  docker:
+    image: abh1nav/dockerui
+    name: dockerui
+    ports: 9000:9000
+    privileged: yes
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  when: not skip_ui is defined
+  tags: [docker]

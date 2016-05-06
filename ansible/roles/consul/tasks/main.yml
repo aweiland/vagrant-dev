@@ -1,0 +1,28 @@
+- name: Directories are created
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items: directories
+  become: true
+  tags: [consul]
+
+- name: Files are copied
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items: files
+  become: true
+  tags: [consul]
+
+- name: Is running
+  shell: "nohup /usr/local/bin/consul agent -server -bootstrap -ui \
+    -data-dir /data/consul/data \
+    -config-dir /data/consul/config \
+    -node={{ ansible_hostname }} \
+    -bind=10.100.199.200 \
+    -client=0.0.0.0 \
+    >{{ logs_dir }}/consul.log 2>&1 &"
+  become: true
+  tags: [consul]
+
